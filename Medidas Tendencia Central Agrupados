@@ -1,0 +1,114 @@
+//Autor: Jose Jaime Nuñez Vazquez
+//Fecha 27/10/2023
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MedidasTendenciaCentralAgrupados {
+
+    public static void main(String[] args) {
+        // Datos agrupados en intervalos.
+        List<Intervalo> datosAgrupados = new ArrayList<>();
+        datosAgrupados.add(new Intervalo(1, 2, 3));
+        datosAgrupados.add(new Intervalo(4, 5, 6));
+        datosAgrupados.add(new Intervalo(7, 8, 9));
+        datosAgrupados.add(new Intervalo(9, 9, 9));
+
+        // Calcular la mediana en datos agrupados.
+        double mediana = calcularMediana(datosAgrupados);
+        System.out.println("Mediana: " + mediana);
+
+        // Calcular la media en datos agrupados.
+        double media = calcularMedia(datosAgrupados);
+        System.out.println("Media: " + media);
+
+        // Calcular la moda en datos agrupados.
+        List<Integer> moda = calcularModa(datosAgrupados);
+        System.out.println("Moda: " + moda);
+    }
+
+    // Clase para representar un intervalo con su punto medio y frecuencia.
+    static class Intervalo {
+        int limiteInferior;
+        int limiteSuperior;
+        int frecuencia;
+
+        public Intervalo(int limiteInferior, int limiteSuperior, int frecuencia) {
+            this.limiteInferior = limiteInferior;
+            this.limiteSuperior = limiteSuperior;
+            this.frecuencia = frecuencia;
+        }
+
+        public double getPuntoMedio() {
+            return (limiteInferior + limiteSuperior) / 2.0;
+        }
+    }
+
+    // Método para calcular la mediana en datos agrupados.
+    public static double calcularMediana(List<Intervalo> datosAgrupados) {
+        double mediana = 0;
+        int n = 0;
+        int N = datosAgrupados.size();
+
+        // Encuentra la frecuencia acumulada que contiene la mediana.
+        int frecuenciaMediana = 0;
+        int i = 0;
+        while (i < N && n + datosAgrupados.get(i).frecuencia < (N / 2)) {
+            n += datosAgrupados.get(i).frecuencia;
+            i++;
+        }
+        frecuenciaMediana = datosAgrupados.get(i).frecuencia;
+
+        // Calcula la mediana.
+        double anchoIntervalo = datosAgrupados.get(i).limiteSuperior - datosAgrupados.get(i).limiteInferior;
+        double L = datosAgrupados.get(i).limiteInferior;
+        double f = frecuenciaMediana;
+        double h = anchoIntervalo;
+
+        mediana = L + ((N / 2 - n) / f) * h;
+
+        return mediana;
+    }
+    //Se calcula la mediana utilizando el método calcularMedianaEnDatosAgrupados.
+    //Se busca el intervalo que contiene la mediana al sumar las frecuencias acumuladas hasta llegar a la mitad del número total de intervalos.
+    //Luego se utiliza la fórmula del punto medio ponderado para calcular la mediana.
+    //El resultado se almacena en la variable mediana.
+
+    // Método para calcular la media en datos agrupados.
+    public static double calcularMedia(List<Intervalo> datosAgrupados) {
+        double sumaProductos = 0;
+        int totalFrecuencias = 0;
+
+        for (Intervalo intervalo : datosAgrupados) {
+            sumaProductos += intervalo.getPuntoMedio() * intervalo.frecuencia;
+            totalFrecuencias += intervalo.frecuencia;
+        }
+
+        return sumaProductos / totalFrecuencias;
+    }
+    //La media se calcula con el método calcularMediaEnDatosAgrupados
+    //Pasa  a través de los intervalos y se calcula la suma de los puntos medios de los intervalos y sus frecuencias
+    //Esta suma se divide por la suma total de las frecuencias para obtener la media
+
+    // Método para calcular la moda en datos agrupados.
+    public static List<Integer> calcularModa(List<Intervalo> datosAgrupados) {
+        List<Integer> moda = new ArrayList<>();
+        int maxFrecuencia = 0;
+
+        for (Intervalo intervalo : datosAgrupados) {
+            if (intervalo.frecuencia > maxFrecuencia) {
+                moda.clear();
+                moda.add((int) Math.round(intervalo.getPuntoMedio()));
+                maxFrecuencia = intervalo.frecuencia;
+            } else if (intervalo.frecuencia == maxFrecuencia) {
+                moda.add((int) Math.round(intervalo.getPuntoMedio()));
+            }
+        }
+
+        return moda;
+    }
+    //La moda se calcula con el método calcularModaEnDatosAgrupados.
+    //Se busca el valor con la mayor frecuencia (moda) y se agrega a una lista llamada moda.
+    //Si se encuentra otro valor con la misma frecuencia máxima, se agrega a la lista.
+    //Los valores de moda se almacenan en la lista moda y se devuelve como resultado.
+}
